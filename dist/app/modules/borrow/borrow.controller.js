@@ -25,8 +25,8 @@ const borrowABook = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
             book: payloads.book,
             quantity: payloads.quantity,
             dueDate: payloads.dueDate,
-            createdAt: payloads.createdAt,
-            updatedAt: payloads.updatedAt,
+            createdAt: response.createdAt,
+            updatedAt: response.updatedAt,
         };
         if (response) {
             res.status(201).json({

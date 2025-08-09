@@ -14,15 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
+const config_1 = __importDefault(require("./app/config"));
 let server;
-const PORT = 7000;
-const uri = `mongodb+srv://library_management:9MP8wjS6nHohPXlI@cluster0.s1tjtzs.mongodb.net/library-management?retryWrites=true&w=majority&appName=Cluster0`;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield mongoose_1.default.connect(uri);
+            yield mongoose_1.default.connect(config_1.default.database_url);
             console.log('Connected with Mongoose !');
-            server = app_1.default.listen(PORT, () => {
+            server = app_1.default.listen(config_1.default.port, () => {
                 console.log('The server is Running');
             });
         }

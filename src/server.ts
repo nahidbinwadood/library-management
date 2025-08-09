@@ -1,17 +1,14 @@
 import mongoose from 'mongoose';
 import app from './app';
+import config from './app/config';
 
 let server;
 
-const PORT = 7000;
-
-const uri = `mongodb+srv://library_management:9MP8wjS6nHohPXlI@cluster0.s1tjtzs.mongodb.net/library-management?retryWrites=true&w=majority&appName=Cluster0`;
-
 async function main() {
   try {
-    await mongoose.connect(uri);
+    await mongoose.connect(config.database_url as string);
     console.log('Connected with Mongoose !');
-    server = app.listen(PORT, () => {
+    server = app.listen(config.port, () => {
       console.log('The server is Running');
     });
   } catch (err) {

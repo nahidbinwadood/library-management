@@ -12,8 +12,8 @@ const borrowABook = async (req: Request, res: Response, next: NextFunction) => {
       book: payloads.book,
       quantity: payloads.quantity,
       dueDate: payloads.dueDate,
-      createdAt: payloads.createdAt,
-      updatedAt: payloads.updatedAt,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
     };
     if (response) {
       res.status(201).json({

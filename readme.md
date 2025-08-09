@@ -32,8 +32,8 @@ This API allows you to manage books, borrow records, and track availability with
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/library-management-api.git
-cd library-management-api
+git clone https://github.com/nahidbinwadood/library-management.git
+cd library-management
 ```
 
 ### 2. Install dependencies
@@ -47,8 +47,8 @@ npm install
 Create a `.env` file in the project root with:
 
 ```env
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/library
+PORT=7000
+DATABASE_URL= Add your Database Url
 ```
 
 ### 4. Run the application
@@ -127,7 +127,7 @@ Example:
   "success": true,
   "message": "Book created successfully",
   "data": {
-    "_id": "64f123abc4567890def12345",
+    "_id": "68977450926a1eb88a975217",
     "title": "The Theory of Everything",
     "author": "Stephen Hawking",
     "genre": "SCIENCE",
@@ -135,8 +135,8 @@ Example:
     "description": "An overview of cosmology and black holes.",
     "copies": 5,
     "available": true,
-    "createdAt": "2024-11-19T10:23:45.123Z",
-    "updatedAt": "2024-11-19T10:23:45.123Z"
+    "createdAt": "2025-08-09T16:16:16.979Z",
+    "updatedAt": "2025-08-09T16:16:16.979Z"
   }
 }
 ```
@@ -149,8 +149,8 @@ Example:
 
 ```json
 {
-  "book": "64ab3f9e2a4b5c6d7e8f9012",
-  "quantity": 2,
+  "book": "68977450926a1eb88a975217",
+  "quantity": 1,
   "dueDate": "2025-07-18T00:00:00.000Z"
 }
 ```
@@ -162,12 +162,10 @@ Example:
   "success": true,
   "message": "Book borrowed successfully",
   "data": {
-    "_id": "64bc4a0f9e1c2d3f4b5a6789",
-    "book": "64ab3f9e2a4b5c6d7e8f9012",
-    "quantity": 2,
-    "dueDate": "2025-07-18T00:00:00.000Z",
-    "createdAt": "2025-06-18T07:12:15.123Z",
-    "updatedAt": "2025-06-18T07:12:15.123Z"
+    "_id": "6897749f926a1eb88a975219",
+    "book": "68977450926a1eb88a975217",
+    "quantity": 1,
+    "dueDate": "2025-07-18T00:00:00.000Z"
   }
 }
 ```

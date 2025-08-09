@@ -22,7 +22,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/books?filter=FICTION&sortBy=createdAt&sort=desc",
+							"raw": "{{base_url}}/books?sortBy=createdAt&sort=desc",
 							"host": [
 								"{{base_url}}"
 							],
@@ -32,7 +32,9 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "FICTION"
+									"value": "NON_FICTION",
+									"description": "NON_FICTION,FICTION",
+									"disabled": true
 								},
 								{
 									"key": "sortBy",
@@ -40,11 +42,12 @@
 								},
 								{
 									"key": "sort",
-									"value": "desc"
+									"value": "desc",
+									"description": "asc,desc"
 								},
 								{
 									"key": "limit",
-									"value": "5",
+									"value": "8",
 									"disabled": true
 								}
 							]
@@ -59,7 +62,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"The Book of Gemini AI\",\r\n    \"author\": \"Nahid Bin Wadood\",\r\n    \"genre\": \"SCIENCE\",\r\n    \"isbn\": \"123443\",\r\n    \"description\": \"An overview of cosmology and black holes.\",\r\n    \"copies\": 2,\r\n    \"available\": true\r\n}",
+							"raw": "// {\r\n//     \"title\": \"The Book of Chat GPT\",\r\n//     \"author\": \"Nahid Bin Wadood\",\r\n//     \"genre\": \"NON_FICTION\",\r\n//     \"isbn\": \"14\",\r\n//     \"description\": \"An overview of cosmology and black holes.\",\r\n//     \"copies\": 2,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Exploring Quantum Worlds\",\r\n//     \"author\": \"Ava Thompson\",\r\n//     \"genre\": \"SCIENCE\",\r\n//     \"isbn\": \"9780451520001\",\r\n//     \"description\": \"A journey into the mysteries of quantum physics.\",\r\n//     \"copies\": 5,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"The Silent Forest\",\r\n//     \"author\": \"Liam Martinez\",\r\n//     \"genre\": \"FICTION\",\r\n//     \"isbn\": \"9780451520002\",\r\n//     \"description\": \"A suspenseful novel set in an isolated woodland village.\",\r\n//     \"copies\": 3,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Coding the Future\",\r\n//     \"author\": \"Sophia Patel\",\r\n//     \"genre\": \"TECHNOLOGY\",\r\n//     \"isbn\": \"9780451520003\",\r\n//     \"description\": \"An introduction to modern programming and AI systems.\",\r\n//     \"copies\": 4,\r\n//     \"available\": true\r\n//   } \r\n//   {\r\n//     \"title\": \"Deep Space Chronicles\",\r\n//     \"author\": \"James Carter\",\r\n//     \"genre\": \"HISTORY\",\r\n//     \"isbn\": \"9780451520004\",\r\n//     \"description\": \"Adventures across galaxies in the distant future.\",\r\n//     \"copies\": 7,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"The History of Civilizations\",\r\n//     \"author\": \"Maria Gonzales\",\r\n//     \"genre\": \"HISTORY\",\r\n//     \"isbn\": \"9780451520005\",\r\n//     \"description\": \"A detailed look at the rise and fall of great empires.\",\r\n//     \"copies\": 6,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Mind and Consciousness\",\r\n//     \"author\": \"Ethan Brown\",\r\n//     \"genre\": \"BIOGRAPHY\",\r\n//     \"isbn\": \"9780451520006\",\r\n//     \"description\": \"Exploring the nature of thought and awareness.\",\r\n//     \"copies\": 8,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Gardening for All Seasons\",\r\n//     \"author\": \"Emily Harris\",\r\n//     \"genre\": \"FANTASY\",\r\n//     \"isbn\": \"9780451520007\",\r\n//     \"description\": \"Tips and tricks for year-round gardening success.\",\r\n//     \"copies\": 10,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Baking Bliss\",\r\n//     \"author\": \"Olivia Smith\",\r\n//     \"genre\": \"FANTASY\",\r\n//     \"isbn\": \"9780451520008\",\r\n//     \"description\": \"Delicious recipes for breads, cakes, and pastries.\",\r\n//     \"copies\": 5,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Warriors of the Wind\",\r\n//     \"author\": \"Lucas Green\",\r\n//     \"genre\": \"FANTASY\",\r\n//     \"isbn\": \"9780451520009\",\r\n//     \"description\": \"A magical tale of warriors and elemental powers.\",\r\n//     \"copies\": 9,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Business Strategy 101\",\r\n//     \"author\": \"Charlotte Turner\",\r\n//     \"genre\": \"HISTORY\",\r\n//     \"isbn\": \"9780451520010\",\r\n//     \"description\": \"Fundamentals of creating and executing business plans.\",\r\n//     \"copies\": 6,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Healthy Living Handbook\",\r\n//     \"author\": \"Benjamin Clark\",\r\n//     \"genre\": \"SCIENCE\",\r\n//     \"isbn\": \"9780451520011\",\r\n//     \"description\": \"A guide to nutrition, exercise, and mental wellness.\",\r\n//     \"copies\": 4,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"The World of Birds\",\r\n//     \"author\": \"Hannah Walker\",\r\n//     \"genre\": \"NON_FICTION\",\r\n//     \"isbn\": \"9780451520012\",\r\n//     \"description\": \"An illustrated guide to bird species across the globe.\",\r\n//     \"copies\": 7,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Legends of the Lost City\",\r\n//     \"author\": \"David Wilson\",\r\n//     \"genre\": \"HISTORY\",\r\n//     \"isbn\": \"9780451520013\",\r\n//     \"description\": \"An expedition to uncover the secrets of a hidden city.\",\r\n//     \"copies\": 3,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Learning Python Fast\",\r\n//     \"author\": \"Mia Adams\",\r\n//     \"genre\": \"SCIENCE\",\r\n//     \"isbn\": \"9780451520014\",\r\n//     \"description\": \"A beginner-friendly guide to Python programming.\",\r\n//     \"copies\": 8,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Poems from the Heart\",\r\n//     \"author\": \"William Scott\",\r\n//     \"genre\": \"NON_FICTION\",\r\n//     \"isbn\": \"9780451520015\",\r\n//     \"description\": \"A collection of heartfelt poems about love and life.\",\r\n//     \"copies\": 6,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Mountains and Valleys\",\r\n//     \"author\": \"Ella Parker\",\r\n//     \"genre\": \"FICTION\",\r\n//     \"isbn\": \"9780451520016\",\r\n//     \"description\": \"Exploring the most breathtaking landscapes worldwide.\",\r\n//     \"copies\": 5,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"The Cybersecurity Guide\",\r\n//     \"author\": \"Noah Murphy\",\r\n//     \"genre\": \"FICTION\",\r\n//     \"isbn\": \"9780451520017\",\r\n//     \"description\": \"Protecting yourself in the digital age.\",\r\n//     \"copies\": 7,\r\n//     \"available\": true\r\n//   }\r\n//   {\r\n//     \"title\": \"Tales of the Ocean\",\r\n//     \"author\": \"Grace Cooper\",\r\n//     \"genre\": \"FICTION\",\r\n//     \"isbn\": \"9780451520018\",\r\n//     \"description\": \"Stories of mystery and adventure at sea.\",\r\n//     \"copies\": 4,\r\n//     \"available\": true\r\n//   }\r\n  {\r\n    \"title\": \"The Art of Mindfulness\",\r\n    \"author\": \"Jack Evans\",\r\n    \"genre\": \"BIOGRAPHY\",\r\n    \"isbn\": \"9780451520019\",\r\n    \"description\": \"A practical approach to meditation and mindful living.\",\r\n    \"copies\": 9,\r\n    \"available\": true\r\n  }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -163,7 +166,7 @@
 							"variable": [
 								{
 									"key": "bookId",
-									"value": "68923af1b8b7848d9a7c2ef4"
+									"value": "689770e14cd4c2cfd8f07529"
 								}
 							]
 						}
@@ -182,7 +185,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"book\": \"68972bb0fb146004ab429455\",\r\n   \"quantity\": 1,\r\n    \"dueDate\": \"2025-07-18T00:00:00.000Z\"\r\n}",
+							"raw": "{\r\n    \"book\": \"689770d84cd4c2cfd8f07527\",\r\n    \"quantity\": 2,\r\n    \"dueDate\": \"2025-07-18T00:00:00.000Z\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -254,6 +257,12 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:7000/api",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "base_url",
+			"value": "https://library-management-beta-mocha.vercel.app/api",
 			"type": "string"
 		}
 	]

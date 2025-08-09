@@ -43,6 +43,17 @@ const handleMongooseError = (error) => {
             },
         };
     }
+    // custom api error=>
+    if (error.name === 'ApiError') {
+        return {
+            statusCode: error.statusCode,
+            message: error.message,
+            error: {
+                name: error.name,
+                message: error.message,
+            },
+        };
+    }
     // Default fallback
     return {
         statusCode: 500,

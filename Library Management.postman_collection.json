@@ -1,0 +1,260 @@
+{
+	"info": {
+		"_postman_id": "c729be2d-4c76-4a87-9ad2-32dbd102636b",
+		"name": "Library Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39614987"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get All Books",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/books?filter=FICTION&sortBy=createdAt&sort=desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "FICTION"
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt"
+								},
+								{
+									"key": "sort",
+									"value": "desc"
+								},
+								{
+									"key": "limit",
+									"value": "5",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"The Book of Gemini AI\",\r\n    \"author\": \"Nahid Bin Wadood\",\r\n    \"genre\": \"SCIENCE\",\r\n    \"isbn\": \"123443\",\r\n    \"description\": \"An overview of cosmology and black holes.\",\r\n    \"copies\": 2,\r\n    \"available\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/books",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"copies\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/books/:bookId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								":bookId"
+							],
+							"variable": [
+								{
+									"key": "bookId",
+									"value": "68972bb0fb146004ab429455"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book By ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"The Book of Everythingg\",\r\n    \"author\": \"Stephen Hawking\",\r\n    \"genre\": \"SCIENCE\",\r\n    \"isbn\": \"97805533801113\",\r\n    \"description\": \"An overview of cosmology and black holes.\",\r\n    \"copies\": -5,\r\n    \"available\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books/:bookId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								":bookId"
+							],
+							"variable": [
+								{
+									"key": "bookId",
+									"value": "68923af1b8b7848d9a7c2ef4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"The Book of Everythingg\",\r\n    \"author\": \"Stephen Hawking\",\r\n    \"genre\": \"SCIENCE\",\r\n    \"isbn\": \"97805533801113\",\r\n    \"description\": \"An overview of cosmology and black holes.\",\r\n    \"copies\": 5,\r\n    \"available\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books/:bookId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								":bookId"
+							],
+							"variable": [
+								{
+									"key": "bookId",
+									"value": "68923af1b8b7848d9a7c2ef4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Borrow",
+			"item": [
+				{
+					"name": "Borrow A Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"book\": \"68972bb0fb146004ab429455\",\r\n   \"quantity\": 1,\r\n    \"dueDate\": \"2025-07-18T00:00:00.000Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/borrow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Borrows",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"book\": \"6896feab94eb3913870a9f5e\",\r\n  \"quantity\": 10,\r\n  \"dueDate\": \"2025-07-18T00:00:00.000Z\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/borrow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrow"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:7000/api",
+			"type": "string"
+		}
+	]
+}

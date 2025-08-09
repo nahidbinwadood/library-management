@@ -9,16 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllBooks = exports.createBook = void 0;
+exports.updateBook = exports.getBookById = exports.getAllBooks = exports.deleteBook = exports.createBook = void 0;
 const books_model_1 = require("./books.model");
 const createBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const payload = req.body;
     try {
-        const response = yield books_model_1.Books.create(payload);
+        const payload = req.body;
+        const book = yield books_model_1.Books.create(payload);
+        const responseData = {
+            _id: book._id,
+            title: book.title,
+            author: book.author,
+            genre: book.genre,
+            isbn: book.isbn,
+            description: book.description,
+            copies: book.copies,
+            available: book.available,
+            createdAt: book.createdAt,
+            updatedAt: book.updatedAt,
+        };
         res.status(201).json({
             success: true,
             message: 'Book created successfully',
-            data: response,
+            data: responseData,
         });
     }
     catch (error) {
@@ -26,22 +38,133 @@ const createBook = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.createBook = createBook;
-const getAllBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { filter, sortBy, sort, limit = 10 } = req.query;
     try {
-        const response = yield books_model_1.Books.find();
-        res.status(201).json({
+        // Build match stage for filtering
+        const matchStage = {};
+        if (filter) {
+            matchStage.genre = filter;
+        }
+        // Build sort stage
+        const sortStage = {};
+        if (sortBy && sort) {
+            const sortField = sortBy;
+            const sortDirection = sort === 'desc' ? -1 : 1;
+            sortStage[sortField] = sortDirection;
+        }
+        // Build aggregation pipeline
+        const pipeline = [];
+        // Add match stage if there are filters
+        if (Object.keys(matchStage).length > 0) {
+            pipeline.push({ $match: matchStage });
+        }
+        // Lookup borrowed data
+        pipeline.push({
+            $lookup: {
+                from: 'borrows',
+                localField: '_id',
+                foreignField: 'book',
+                as: 'borrowedData',
+            },
+        });
+        // Add sort stage if specified
+        if (Object.keys(sortStage).length > 0) {
+            pipeline.push({ $sort: sortStage });
+        }
+        // Add limit stage
+        pipeline.push({ $limit: parseInt(limit) });
+        // Project the final structure
+        pipeline.push({
+            $project: {
+                _id: 1,
+                title: 1,
+                author: 1,
+                genre: 1,
+                isbn: 1,
+                description: 1,
+                copies: 1,
+                available: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                borrowedData: {
+                    $cond: {
+                        if: { $gt: [{ $size: '$borrowedData' }, 0] },
+                        then: '$borrowedData',
+                        else: '$$REMOVE',
+                    },
+                },
+            },
+        });
+        const response = yield books_model_1.Books.aggregate(pipeline);
+        res.status(200).json({
             success: true,
             message: 'Books retrieved successfully',
             data: response,
         });
     }
     catch (error) {
-        console.log(error);
-        res.status(400).json({
-            success: false,
-            message: 'Validation failed',
-            error,
-        });
+        next(error);
     }
 });
 exports.getAllBooks = getAllBooks;
+const getBookById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookId } = req.params;
+    try {
+        const response = yield books_model_1.Books.findById(bookId);
+        res.status(200).json({
+            success: true,
+            message: 'Book retrieved successfully',
+            data: response,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getBookById = getBookById;
+const updateBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookId } = req.params;
+    const payload = req.body;
+    let updatedPayload = Object.assign({}, payload);
+    if ((payload === null || payload === void 0 ? void 0 : payload.copies) > 0) {
+        updatedPayload = Object.assign(Object.assign({}, payload), { available: true });
+    }
+    try {
+        const response = yield books_model_1.Books.findByIdAndUpdate(bookId, Object.assign({}, updatedPayload), {
+            new: true,
+            runValidators: true,
+            context: 'query',
+        });
+        res.status(201).json({
+            success: true,
+            message: 'Book updated successfully',
+            data: response,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.updateBook = updateBook;
+const deleteBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookId } = req.params;
+    try {
+        const deletedBook = yield books_model_1.Books.findByIdAndDelete(bookId);
+        if (!deletedBook) {
+            return res.status(404).json({
+                success: false,
+                message: 'Book not found',
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Book deleted successfully',
+            data: null,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.deleteBook = deleteBook;

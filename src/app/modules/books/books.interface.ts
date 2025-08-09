@@ -12,4 +12,6 @@ export interface IBooks {
   description?: string;
   copies: number;
   available: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

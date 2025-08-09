@@ -42,7 +42,6 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
 
     // Build sort stage
     const sortStage: { [key: string]: 1 | -1 } = {};
-
     if (sortBy && sort) {
       const sortField = sortBy as string;
       const sortDirection = sort === 'desc' ? -1 : 1;
@@ -57,16 +56,6 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
       pipeline.push({ $match: matchStage });
     }
 
-    // Lookup borrowed data
-    pipeline.push({
-      $lookup: {
-        from: 'borrows',
-        localField: '_id',
-        foreignField: 'book',
-        as: 'borrowedData',
-      },
-    });
-
     // Add sort stage if specified
     if (Object.keys(sortStage).length > 0) {
       pipeline.push({ $sort: sortStage });
@@ -75,7 +64,6 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
     // Add limit stage
     pipeline.push({ $limit: parseInt(limit as string) });
 
-    // Project the final structure
     pipeline.push({
       $project: {
         _id: 1,
@@ -88,13 +76,6 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
         available: 1,
         createdAt: 1,
         updatedAt: 1,
-        borrowedData: {
-          $cond: {
-            if: { $gt: [{ $size: '$borrowedData' }, 0] },
-            then: '$borrowedData',
-            else: '$$REMOVE',
-          },
-        },
       },
     });
 

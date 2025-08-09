@@ -59,22 +59,12 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         if (Object.keys(matchStage).length > 0) {
             pipeline.push({ $match: matchStage });
         }
-        // Lookup borrowed data
-        pipeline.push({
-            $lookup: {
-                from: 'borrows',
-                localField: '_id',
-                foreignField: 'book',
-                as: 'borrowedData',
-            },
-        });
         // Add sort stage if specified
         if (Object.keys(sortStage).length > 0) {
             pipeline.push({ $sort: sortStage });
         }
         // Add limit stage
         pipeline.push({ $limit: parseInt(limit) });
-        // Project the final structure
         pipeline.push({
             $project: {
                 _id: 1,
@@ -87,13 +77,6 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
                 available: 1,
                 createdAt: 1,
                 updatedAt: 1,
-                borrowedData: {
-                    $cond: {
-                        if: { $gt: [{ $size: '$borrowedData' }, 0] },
-                        then: '$borrowedData',
-                        else: '$$REMOVE',
-                    },
-                },
             },
         });
         const response = yield books_model_1.Books.aggregate(pipeline);

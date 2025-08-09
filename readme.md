@@ -162,10 +162,12 @@ Example:
   "success": true,
   "message": "Book borrowed successfully",
   "data": {
-    "_id": "6897749f926a1eb88a975219",
+    "_id": "68977582531756c36f8009a3",
     "book": "68977450926a1eb88a975217",
     "quantity": 1,
-    "dueDate": "2025-07-18T00:00:00.000Z"
+    "dueDate": "2025-07-18T00:00:00.000Z",
+    "createdAt": "2025-08-09T16:21:22.371Z",
+    "updatedAt": "2025-08-09T16:21:22.371Z"
   }
 }
 ```
@@ -183,17 +185,17 @@ Example:
   "data": [
     {
       "book": {
-        "title": "The Theory of Everything",
-        "isbn": "9780553380163"
+        "title": "Tales of the Ocean",
+        "isbn": "9780451520018"
       },
-      "totalQuantity": 5
+      "totalQuantity": 4
     },
     {
       "book": {
-        "title": "1984",
-        "isbn": "9780451524935"
+        "title": "The Theory of Everything",
+        "isbn": "9780553380163"
       },
-      "totalQuantity": 3
+      "totalQuantity": 2
     }
   ]
 }
@@ -205,8 +207,8 @@ Example:
 
 ```json
 {
-  "message": "Validation failed",
   "success": false,
+  "message": "Validation failed",
   "error": {
     "name": "ValidationError",
     "errors": {
@@ -228,16 +230,3 @@ Example:
 ```
 
 ---
-
-## 🏆 Bonus Implementations
-
-- Clean, maintainable code with clear naming conventions.
-- Strictly matching API response formats.
-- Proper error handling for 404s, invalid IDs, and validation errors.
-- Professional README (this file).
-
----
-
-## 📜 License
-
-This project is open-source and available under the [MIT License](LICENSE).

@@ -49,7 +49,13 @@ const corsOptions = {
   credentials: true,
 };
 // parser:
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // routes==>

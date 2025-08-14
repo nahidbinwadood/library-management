@@ -11,6 +11,7 @@ const corsOptions = {
     config.client_base_url as string,
     `http://localhost:${config.port}`,
     `http://192.168.0.160:${config.port}`,
+    `http://localhost:${config.frontend_port}`,
   ],
   credentials: true,
 };

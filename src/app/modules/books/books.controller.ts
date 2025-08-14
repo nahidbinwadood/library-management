@@ -3,7 +3,11 @@ import { Books } from './books.model';
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const payload = req.body;
+    const payload = { ...req.body };
+
+    if (payload.copies === 0) {
+      payload.available = false;
+    }
     const book = await Books.create(payload);
 
     const responseData = {

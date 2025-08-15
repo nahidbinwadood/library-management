@@ -13,6 +13,10 @@ export const globalErrorHandler = (
     error: formattedError,
   } = handleMongooseError(error);
 
+  // Ensure CORS headers are always set
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
   res.status(statusCode).json({
     success: false,
     message,

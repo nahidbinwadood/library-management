@@ -1,4 +1,4 @@
-import cors, { CorsOptions } from 'cors';
+import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import config from './app/config';
 import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
@@ -6,18 +6,12 @@ import router from './app/router/router';
 
 const app: Application = express();
 
-const corsOptions: CorsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (
-      [config.client_base_url, config.live_client_base_url].includes(origin)
-    ) {
-      return callback(null, true);
-    }
-    return callback(new Error('Not allowed by CORS'));
-  },
+const corsOptions = {
+  origin: [
+    config.client_base_url as string,
+    config.live_client_base_url as string,
+  ],
   credentials: true,
-  optionsSuccessStatus: 200,
 };
 
 // parser:

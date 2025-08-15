@@ -13,7 +13,10 @@ exports.updateBook = exports.getBookById = exports.getAllBooks = exports.deleteB
 const books_model_1 = require("./books.model");
 const createBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const payload = req.body;
+        const payload = Object.assign({}, req.body);
+        if (payload.copies === 0) {
+            payload.available = false;
+        }
         const book = yield books_model_1.Books.create(payload);
         const responseData = {
             _id: book._id,

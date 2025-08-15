@@ -12,14 +12,13 @@ const app = (0, express_1.default)();
 const corsOptions = {
     origin: [
         config_1.default.client_base_url,
-        `http://localhost:${config_1.default.port}`,
-        `http://192.168.0.160:${config_1.default.port}`,
+        config_1.default.live_client_base_url,
     ],
     credentials: true,
 };
 // parser:
-app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
+app.use((0, cors_1.default)(corsOptions));
 // routes==>
 app.use('/api', router_1.default);
 // test api==>

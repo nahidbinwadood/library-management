@@ -10,15 +10,20 @@ const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const router_1 = __importDefault(require("./app/router/router"));
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: [
-        config_1.default.client_base_url,
-        config_1.default.live_client_base_url,
-    ],
+    origin: (origin, callback) => {
+        if (!origin)
+            return callback(null, true);
+        if ([config_1.default.client_base_url, config_1.default.live_client_base_url].includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
+    optionsSuccessStatus: 200,
 };
 // parser:
-app.use(express_1.default.json());
 app.use((0, cors_1.default)(corsOptions));
+app.use(express_1.default.json());
 // routes==>
 app.use('/api', router_1.default);
 // test api==>

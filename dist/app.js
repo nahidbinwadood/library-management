@@ -5,14 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
+const config_1 = __importDefault(require("./app/config"));
 const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const router_1 = __importDefault(require("./app/router/router"));
 const app = (0, express_1.default)();
-// const allowedOrigins = [config.client_base_url, config.live_client_base_url];
-const allowedOrigins = [
-    'http://localhost:3000',
-    'https://my-library-management-tau.vercel.app',
-];
+const allowedOrigins = [config_1.default.client_base_url, config_1.default.live_client_base_url];
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'https://my-library-management-tau.vercel.app',
+// ];
+console.log(allowedOrigins);
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {

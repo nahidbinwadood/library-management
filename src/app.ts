@@ -6,11 +6,21 @@ import router from './app/router/router';
 
 const app: Application = express();
 
+const allowedOrigins = [config.client_base_url, config.live_client_base_url];
+
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'https://my-library-management-tau.vercel.app',
+// ];
+
 const corsOptions = {
-  origin: [
-    config.client_base_url as string,
-    config.live_client_base_url as string,
-  ],
+  origin: (origin: string | undefined, callback: any) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
 

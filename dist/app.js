@@ -9,11 +9,20 @@ const config_1 = __importDefault(require("./app/config"));
 const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const router_1 = __importDefault(require("./app/router/router"));
 const app = (0, express_1.default)();
+const allowedOrigins = [config_1.default.client_base_url, config_1.default.live_client_base_url];
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'https://my-library-management-tau.vercel.app',
+// ];
 const corsOptions = {
-    origin: [
-        config_1.default.client_base_url,
-        config_1.default.live_client_base_url,
-    ],
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 };
 // parser:

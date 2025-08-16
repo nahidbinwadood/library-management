@@ -8,10 +8,6 @@ const app: Application = express();
 
 const allowedOrigins = [config.client_local_url, config.client_live_url];
 
-// const allowedOrigins = [
-//   'http://localhost:3000',
-//   'https://my-library-management-tau.vercel.app',
-// ];
 const corsOptions = {
   origin: (origin: string | undefined, callback: any) => {
     if (!origin || allowedOrigins.includes(origin)) {

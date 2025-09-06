@@ -8,12 +8,14 @@ This API allows you to manage books, borrow records, and track availability with
 ## 🚀 Features
 
 - **Book Management**: Create, update, delete, and view books.
-- **Borrowing System**: Borrow books with availability checks.
-- **Aggregation**: Summarized borrowed book data with total quantities.
+- **Advanced Filtering & Search**: Filter by genre, free-text search, sorting, and pagination.
+- **Borrowing System**: Borrow books with availability checks and detailed analytics.
+- **Enhanced Analytics**: Comprehensive statistics and insights for both books and borrowing patterns.
+- **Aggregation Pipeline**: Advanced MongoDB aggregation for performance and detailed summaries.
 - **Schema Validation**: Enforced using Mongoose with enums, required fields, and constraints.
 - **Business Logic**: Automatic availability status updates when stock runs out.
 - **Middleware**: Pre and post-save hooks for Mongoose models.
-- **Filtering & Sorting**: Get books with filtering by genre, sorting, and limiting results.
+- **Pagination Support**: Efficient data pagination with metadata.
 
 ---
 
@@ -87,24 +89,78 @@ npm start
 
 ---
 
-## 🔍 Query Parameters (Books)
+## 🔍 Enhanced Query Parameters
 
-- **`filter`**: Filter by genre (`FICTION`, `NON_FICTION`, `SCIENCE`, `HISTORY`, `BIOGRAPHY`, `FANTASY`)
+### Books Endpoint (`/api/books`)
+
+- **`filter`**: Filter by genre (`FICTION`, `NON_FICTION`, `SCIENCE`, `HISTORY`, `BIOGRAPHY`, `FANTASY`, `all`)
+- **`search`**: Free-text search in book titles (case-insensitive)
 - **`sort`**: Sorting order (`asc` or `desc`)
-- **`sortBy`**: Field to sort by (e.g., `createdAt`, `title`)
-- **`limit`**: Limit number of results (default: 10)
+- **`sortBy`**: Field to sort by (e.g., `createdAt`, `title`, `author`, `copies`)
+- **`page`**: Page number for pagination (default: 1)
+- **`limit`**: Number of results per page (default: 10)
 
-Example:
+**Example:**
 
 ```
-/api/books?filter=FANTASY&sortBy=createdAt&sort=desc&limit=5
+/api/books?filter=FANTASY&search=dragon&sortBy=createdAt&sort=desc&page=1&limit=5
+```
+
+### Borrow Endpoint (`/api/borrow`)
+
+- **`sort`**: Sorting order (`asc` or `desc`)
+- **`sortBy`**: Field to sort by (`totalQuantity`, `book.title`)
+- **`page`**: Page number for pagination (default: 1)
+- **`limit`**: Number of results per page (default: 10)
+
+**Example:**
+
+```
+/api/borrow?sortBy=totalQuantity&sort=desc&page=1&limit=10
 ```
 
 ---
 
-## 📄 Example Requests & Responses
+## 📄 Enhanced API Responses
 
-### 1. Create Book
+### 1. Get All Books (Enhanced)
+
+**GET** `/api/books?filter=SCIENCE&page=1&limit=5`
+
+```json
+{
+  "success": true,
+  "message": "Books retrieved successfully",
+  "data": [
+    {
+      "_id": "68977450926a1eb88a975217",
+      "title": "The Theory of Everything",
+      "author": "Stephen Hawking",
+      "genre": "SCIENCE",
+      "isbn": "9780553380163",
+      "description": "An overview of cosmology and black holes.",
+      "copies": 5,
+      "available": true,
+      "createdAt": "2025-08-09T16:16:16.979Z",
+      "updatedAt": "2025-08-09T16:16:16.979Z"
+    }
+  ],
+  "pagination": {
+    "total": 15,
+    "totalPages": 3,
+    "currentPage": 1,
+    "pageSize": 5
+  },
+  "stats": {
+    "totalBooks": 15,
+    "totalCopies": 75,
+    "borrowed": 23,
+    "availableBooks": 52
+  }
+}
+```
+
+### 2. Create Book
 
 **POST** `/api/books`
 
@@ -141,9 +197,7 @@ Example:
 }
 ```
 
----
-
-### 2. Borrow a Book
+### 3. Borrow a Book
 
 **POST** `/api/borrow`
 
@@ -172,11 +226,9 @@ Example:
 }
 ```
 
----
+### 4. Enhanced Borrowed Books Summary
 
-### 3. Borrowed Books Summary
-
-**GET** `/api/borrow`
+**GET** `/api/borrow?sortBy=totalQuantity&sort=desc&page=1&limit=5`
 
 ```json
 {
@@ -185,6 +237,7 @@ Example:
   "data": [
     {
       "book": {
+        "id": "68977450926a1eb88a975217",
         "title": "Tales of the Ocean",
         "isbn": "9780451520018"
       },
@@ -192,14 +245,61 @@ Example:
     },
     {
       "book": {
+        "id": "68977450926a1eb88a975218",
         "title": "The Theory of Everything",
         "isbn": "9780553380163"
       },
       "totalQuantity": 2
     }
-  ]
+  ],
+  "pagination": {
+    "total": 8,
+    "totalPages": 2,
+    "currentPage": 1,
+    "pageSize": 5
+  },
+  "stats": {
+    "uniqueTitlesBorrowed": 8,
+    "totalBorrowedCopies": 23,
+    "averageCopiesPerBook": 2,
+    "mostPopularBook": "Tales of the Ocean",
+    "mostPopularBookCopies": 4
+  }
 }
 ```
+
+---
+
+## 🎯 New Features Explained
+
+### 📊 Enhanced Analytics
+
+**Books Statistics:**
+
+- **Total Books**: Count of all books in the library
+- **Total Copies**: Sum of all book copies available
+- **Borrowed**: Number of copies currently borrowed
+- **Available Books**: Number of copies currently available
+
+**Borrowing Analytics:**
+
+- **Unique Titles Borrowed**: Number of different book titles borrowed
+- **Total Borrowed Copies**: Total number of book copies borrowed
+- **Average Copies Per Book**: Average borrowing rate per book
+- **Most Popular Book**: Book with highest borrowing count
+
+### 🔍 Advanced Search & Filtering
+
+- **Genre Filtering**: Filter books by specific genres or view all
+- **Free-text Search**: Search books by title with case-insensitive matching
+- **Flexible Sorting**: Sort by any field in ascending or descending order
+- **Smart Pagination**: Efficient data pagination with comprehensive metadata
+
+### 🚀 Performance Optimizations
+
+- **MongoDB Aggregation**: Uses advanced aggregation pipelines for efficient data processing
+- **Faceted Search**: Single query returns data, count, and statistics
+- **Optimized Queries**: Reduced database calls through intelligent query design
 
 ---
 
@@ -230,3 +330,29 @@ Example:
 ```
 
 ---
+
+## 📚 Usage Examples
+
+### Search for Fantasy Books
+
+```bash
+GET /api/books?filter=FANTASY&sortBy=title&sort=asc
+```
+
+### Find Books with "Dragon" in Title
+
+```bash
+GET /api/books?search=dragon&limit=5
+```
+
+### Get Most Borrowed Books
+
+```bash
+GET /api/borrow?sortBy=totalQuantity&sort=desc
+```
+
+### Paginated Book List
+
+```bash
+GET /api/books?page=2&limit=10&sortBy=createdAt&sort=desc
+```

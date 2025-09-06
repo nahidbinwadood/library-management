@@ -42,7 +42,7 @@ const createBook = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.createBook = createBook;
 const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f;
     try {
         const { filter, sortBy = 'createdAt', sort = 'desc', page = 1, limit = 10, search, // optional free text search
          } = req.query;
@@ -51,7 +51,7 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         const skip = (pageNum - 1) * limitNum;
         // Filtering
         const matchStage = {};
-        if (filter && filter != 'all') {
+        if (filter && filter !== 'all') {
             matchStage.genre = filter;
         }
         if (search) {
@@ -66,7 +66,7 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         if (Object.keys(matchStage).length > 0) {
             pipeline.push({ $match: matchStage });
         }
-        // Facet for data + count
+        // Facet for data + count + stats
         pipeline.push({
             $facet: {
                 data: [
@@ -89,12 +89,38 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
                     },
                 ],
                 totalCount: [{ $count: 'count' }],
+                stats: [
+                    {
+                        $group: {
+                            _id: null,
+                            totalBooks: { $sum: 1 },
+                            totalCopies: { $sum: { $toInt: { $ifNull: ['$copies', 0] } } },
+                            borrowed: {
+                                $sum: {
+                                    $subtract: [
+                                        { $toInt: { $ifNull: ['$copies', 0] } },
+                                        { $toInt: { $ifNull: ['$available', 0] } },
+                                    ],
+                                },
+                            },
+                            availableBooks: {
+                                $sum: { $toInt: { $ifNull: ['$available', 0] } },
+                            },
+                        },
+                    },
+                ],
             },
         });
         const result = yield books_model_1.Books.aggregate(pipeline);
         const books = ((_a = result[0]) === null || _a === void 0 ? void 0 : _a.data) || [];
         const total = ((_d = (_c = (_b = result[0]) === null || _b === void 0 ? void 0 : _b.totalCount) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.count) || 0;
         const totalPages = Math.ceil(total / limitNum);
+        const statsAgg = ((_f = (_e = result[0]) === null || _e === void 0 ? void 0 : _e.stats) === null || _f === void 0 ? void 0 : _f[0]) || {
+            totalBooks: 0,
+            totalCopies: 0,
+            borrowed: 0,
+            availableBooks: 0,
+        };
         res.status(200).json({
             success: true,
             message: 'Books retrieved successfully',
@@ -104,6 +130,12 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
                 totalPages,
                 currentPage: pageNum,
                 pageSize: limitNum,
+            },
+            stats: {
+                totalBooks: statsAgg.totalBooks,
+                totalCopies: statsAgg.totalCopies,
+                borrowed: statsAgg.borrowed,
+                availableBooks: statsAgg.availableBooks,
             },
         });
     }

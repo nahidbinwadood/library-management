@@ -50,7 +50,7 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
 
     // Filtering
     const matchStage: Record<string, any> = {};
-    if (filter && filter != 'all') {
+    if (filter && filter !== 'all') {
       matchStage.genre = filter;
     }
     if (search) {
@@ -69,7 +69,7 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
       pipeline.push({ $match: matchStage });
     }
 
-    // Facet for data + count
+    // Facet for data + count + stats
     pipeline.push({
       $facet: {
         data: [
@@ -92,6 +92,26 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
           },
         ],
         totalCount: [{ $count: 'count' }],
+        stats: [
+          {
+            $group: {
+              _id: null,
+              totalBooks: { $sum: 1 },
+              totalCopies: { $sum: { $toInt: { $ifNull: ['$copies', 0] } } },
+              borrowed: {
+                $sum: {
+                  $subtract: [
+                    { $toInt: { $ifNull: ['$copies', 0] } },
+                    { $toInt: { $ifNull: ['$available', 0] } },
+                  ],
+                },
+              },
+              availableBooks: {
+                $sum: { $toInt: { $ifNull: ['$available', 0] } },
+              },
+            },
+          },
+        ],
       },
     });
 
@@ -100,6 +120,13 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
     const books = result[0]?.data || [];
     const total = result[0]?.totalCount?.[0]?.count || 0;
     const totalPages = Math.ceil(total / limitNum);
+
+    const statsAgg = result[0]?.stats?.[0] || {
+      totalBooks: 0,
+      totalCopies: 0,
+      borrowed: 0,
+      availableBooks: 0,
+    };
 
     res.status(200).json({
       success: true,
@@ -110,6 +137,12 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
         totalPages,
         currentPage: pageNum,
         pageSize: limitNum,
+      },
+      stats: {
+        totalBooks: statsAgg.totalBooks,
+        totalCopies: statsAgg.totalCopies,
+        borrowed: statsAgg.borrowed,
+        availableBooks: statsAgg.availableBooks,
       },
     });
   } catch (error) {

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBook = exports.getBookById = exports.getAllBooks = exports.deleteBook = exports.createBook = void 0;
+exports.updateBook = exports.getBookById = exports.getAllBooksDemo = exports.getAllBooks = exports.deleteBook = exports.createBook = void 0;
 const books_model_1 = require("./books.model");
 const createBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -42,47 +42,80 @@ const createBook = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.createBook = createBook;
 const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { filter, sortBy, sort, limit = 10 } = req.query;
+    var _a, _b, _c, _d;
     try {
-        // Build match stage for filtering
+        const { filter, sortBy = 'createdAt', sort = 'desc', page = 1, limit = 10, search, // optional free text search
+         } = req.query;
+        const pageNum = parseInt(page, 10) || 1;
+        const limitNum = parseInt(limit, 10) || 10;
+        const skip = (pageNum - 1) * limitNum;
+        // Filtering
         const matchStage = {};
-        if (filter) {
+        if (filter && filter != 'all') {
             matchStage.genre = filter;
         }
-        // Build sort stage
-        const sortStage = {};
-        if (sortBy && sort) {
-            const sortField = sortBy;
-            const sortDirection = sort === 'desc' ? -1 : 1;
-            sortStage[sortField] = sortDirection;
+        if (search) {
+            matchStage.title = { $regex: search, $options: 'i' };
         }
-        // Build aggregation pipeline
+        // Sorting
+        const sortStage = {
+            [sortBy]: sort === 'desc' ? -1 : 1,
+        };
+        // Aggregation pipeline
         const pipeline = [];
-        // Add match stage if there are filters
         if (Object.keys(matchStage).length > 0) {
             pipeline.push({ $match: matchStage });
         }
-        // Add sort stage if specified
-        if (Object.keys(sortStage).length > 0) {
-            pipeline.push({ $sort: sortStage });
-        }
-        // Add limit stage
-        pipeline.push({ $limit: parseInt(limit) });
+        // Facet for data + count
         pipeline.push({
-            $project: {
-                _id: 1,
-                title: 1,
-                author: 1,
-                genre: 1,
-                isbn: 1,
-                description: 1,
-                copies: 1,
-                available: 1,
-                createdAt: 1,
-                updatedAt: 1,
+            $facet: {
+                data: [
+                    { $sort: sortStage },
+                    { $skip: skip },
+                    { $limit: limitNum },
+                    {
+                        $project: {
+                            _id: 1,
+                            title: 1,
+                            author: 1,
+                            genre: 1,
+                            isbn: 1,
+                            description: 1,
+                            copies: 1,
+                            available: 1,
+                            createdAt: 1,
+                            updatedAt: 1,
+                        },
+                    },
+                ],
+                totalCount: [{ $count: 'count' }],
             },
         });
-        const response = yield books_model_1.Books.aggregate(pipeline);
+        const result = yield books_model_1.Books.aggregate(pipeline);
+        const books = ((_a = result[0]) === null || _a === void 0 ? void 0 : _a.data) || [];
+        const total = ((_d = (_c = (_b = result[0]) === null || _b === void 0 ? void 0 : _b.totalCount) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.count) || 0;
+        const totalPages = Math.ceil(total / limitNum);
+        res.status(200).json({
+            success: true,
+            message: 'Books retrieved successfully',
+            data: books,
+            pagination: {
+                total,
+                totalPages,
+                currentPage: pageNum,
+                pageSize: limitNum,
+            },
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.getAllBooks = getAllBooks;
+const getAllBooksDemo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const response = yield books_model_1.Books.find();
+        console.log(response);
         res.status(200).json({
             success: true,
             message: 'Books retrieved successfully',
@@ -93,7 +126,7 @@ const getAllBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         next(error);
     }
 });
-exports.getAllBooks = getAllBooks;
+exports.getAllBooksDemo = getAllBooksDemo;
 const getBookById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { bookId } = req.params;
     try {

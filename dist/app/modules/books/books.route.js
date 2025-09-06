@@ -8,4 +8,5 @@ booksRoutes.post('/', books_controller_1.createBook);
 booksRoutes.get('/:bookId', books_controller_1.getBookById);
 booksRoutes.put('/:bookId', books_controller_1.updateBook);
 booksRoutes.delete('/:bookId', books_controller_1.deleteBook);
+booksRoutes.get('/new', books_controller_1.getAllBooksDemo);
 exports.default = booksRoutes;

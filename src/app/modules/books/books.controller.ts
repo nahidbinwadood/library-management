@@ -34,57 +34,130 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
-  const { filter, sortBy, sort, limit = 10 } = req.query;
-
   try {
-    // Build match stage for filtering
-    const matchStage: { [key: string]: any } = {};
+    const {
+      filter,
+      sortBy = 'createdAt',
+      sort = 'desc',
+      page = 1,
+      limit = 10,
+      search, // optional free text search
+    } = req.query;
 
-    if (filter) {
-      matchStage.genre = filter as string;
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 10;
+    const skip = (pageNum - 1) * limitNum;
+
+    // Filtering
+    const matchStage: Record<string, any> = {};
+    if (filter && filter !== 'all') {
+      matchStage.genre = filter;
+    }
+    if (search) {
+      matchStage.title = { $regex: search as string, $options: 'i' };
     }
 
-    // Build sort stage
-    const sortStage: { [key: string]: 1 | -1 } = {};
-    if (sortBy && sort) {
-      const sortField = sortBy as string;
-      const sortDirection = sort === 'desc' ? -1 : 1;
-      sortStage[sortField] = sortDirection;
-    }
+    // Sorting
+    const sortStage: Record<string, 1 | -1> = {
+      [sortBy as string]: sort === 'desc' ? -1 : 1,
+    };
 
-    // Build aggregation pipeline
+    // Aggregation pipeline
     const pipeline: any[] = [];
 
-    // Add match stage if there are filters
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
 
-    // Add sort stage if specified
-    if (Object.keys(sortStage).length > 0) {
-      pipeline.push({ $sort: sortStage });
-    }
-
-    // Add limit stage
-    pipeline.push({ $limit: parseInt(limit as string) });
-
+    // Facet for data + count + stats
     pipeline.push({
-      $project: {
-        _id: 1,
-        title: 1,
-        author: 1,
-        genre: 1,
-        isbn: 1,
-        description: 1,
-        copies: 1,
-        available: 1,
-        createdAt: 1,
-        updatedAt: 1,
+      $facet: {
+        data: [
+          { $sort: sortStage },
+          { $skip: skip },
+          { $limit: limitNum },
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              author: 1,
+              genre: 1,
+              isbn: 1,
+              description: 1,
+              copies: 1,
+              available: 1,
+              createdAt: 1,
+              updatedAt: 1,
+            },
+          },
+        ],
+        totalCount: [{ $count: 'count' }],
+        stats: [
+          {
+            $group: {
+              _id: null,
+              totalBooks: { $sum: 1 },
+              totalCopies: { $sum: { $toInt: { $ifNull: ['$copies', 0] } } },
+              borrowed: {
+                $sum: {
+                  $subtract: [
+                    { $toInt: { $ifNull: ['$copies', 0] } },
+                    { $toInt: { $ifNull: ['$available', 0] } },
+                  ],
+                },
+              },
+              availableBooks: {
+                $sum: { $toInt: { $ifNull: ['$available', 0] } },
+              },
+            },
+          },
+        ],
       },
     });
 
-    const response = await Books.aggregate(pipeline);
+    const result = await Books.aggregate(pipeline);
 
+    const books = result[0]?.data || [];
+    const total = result[0]?.totalCount?.[0]?.count || 0;
+    const totalPages = Math.ceil(total / limitNum);
+
+    const statsAgg = result[0]?.stats?.[0] || {
+      totalBooks: 0,
+      totalCopies: 0,
+      borrowed: 0,
+      availableBooks: 0,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Books retrieved successfully',
+      data: books,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: pageNum,
+        pageSize: limitNum,
+      },
+      stats: {
+        totalBooks: statsAgg.totalBooks,
+        totalCopies: statsAgg.totalCopies,
+        borrowed: statsAgg.borrowed,
+        availableBooks: statsAgg.availableBooks,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllBooksDemo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const response = await Books.find();
+    console.log(response);
     res.status(200).json({
       success: true,
       message: 'Books retrieved successfully',
@@ -162,4 +235,11 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createBook, deleteBook, getAllBooks, getBookById, updateBook };
+export {
+  createBook,
+  deleteBook,
+  getAllBooks,
+  getAllBooksDemo,
+  getBookById,
+  updateBook,
+};

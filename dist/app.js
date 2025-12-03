@@ -9,12 +9,16 @@ const config_1 = __importDefault(require("./app/config"));
 const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const router_1 = __importDefault(require("./app/router/router"));
 const app = (0, express_1.default)();
+const allowedOrigins = [config_1.default.client_local_url, config_1.default.client_live_url];
 const corsOptions = {
-    origin: [
-        config_1.default.client_base_url,
-        `http://localhost:${config_1.default.port}`,
-        `http://192.168.0.160:${config_1.default.port}`,
-    ],
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 };
 // parser:
